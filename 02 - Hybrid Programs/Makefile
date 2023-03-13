@@ -4,9 +4,16 @@
 CPP := g++
 CPP_FLAGS := -Wall -m64 -gdwarf-2 -std=c++17 -c
 
+
+# C++ compiler and flags
+CC := gcc
+CC_FLAGS := -Wall -m64 -gdwarf-2 -c
+
+
 #	Assembler and flags
 ASM := yasm
 ASM_FLAGS := -f elf64 -gdwarf2
+
 
 #	Linker and flags (we use g++ for hybrid programs)
 #	Note that the flag "-z noexecstack" is new and now required in most cases.
@@ -17,6 +24,23 @@ LINKER_FLAGS := -Wall -m64 -gdwarf-2 -no-pie -z noexecstack
 # Executable name
 BIN_NAME := main
 BIN := ./$(BIN_NAME)
+
+
+
+###### Begin Recipe Section
+
+
+# The default taregt is the first target that appears in the Makefile
+menu:
+	@echo
+	@echo "*** Main Menu ***"
+	@echo
+	@echo "make menu      ==> This menu"
+	@echo "make build     ==> Build the program"
+	@echo "make run       ==> Run the program"
+	@echo "make clean     ==> Clean the working area"
+	@echo
+.PHONY:	menu
 
 
 # "Phony" target to run our program. "Phony" means the target
@@ -50,7 +74,7 @@ build:	$(BIN)
 # Trace back up to the variables defined at the top of this file
 #	and you'll see that $(BIN) just expands to ./my-program
 # The job of this target is to build your entire program.
-$(BIN):	driver.o hello.o
+$(BIN):	driver.o hello.o sea.o
 	$(LINKER) $(LINKER_FLAGS) *.so *.o -o "$@"
 
 
@@ -62,6 +86,11 @@ driver.o:	driver.cpp
 # Compile our hello module
 hello.o:	hello.asm
 	$(ASM) $(ASM_FLAGS) "$<" -o "$@"
+
+
+# Compile our C program
+sea.o:	sea.c
+	$(CC) $(CC_FLAGS) "$<" -o "$@"
 
 
 # Clean up our repo (having object files laying around is messsy)
